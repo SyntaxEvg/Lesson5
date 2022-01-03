@@ -5,8 +5,65 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LessonLivel2"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Closed="Window_Closed"  
+        Title="Employee" Height="450" Width="800" MaxHeight="450" MaxWidth="800">
+    <TabControl>
+    <TabItem Header="Сотрудники">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+          
+        </Grid.RowDefinitions>
+                <DockPanel>
+                    <UniformGrid DockPanel.Dock="Bottom"  Rows="1">
+                        <Button  Content="ADD New" Margin="5"/>
+                        <Button Content="Deleted " Margin="5"/>
+                    </UniformGrid>
+                    <ListView Margin="5" 
+                  SelectionChanged="ListEmp_SelectionChanged" 
+                  SelectedItem="{Binding ItemEmployee}"
+                  ItemsSource="{Binding Employees}" 
+                  x:Name="ListEmp" Grid.RowSpan="2" Grid.Column="0">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Path=Name, StringFormat='{}{0}\&#x20;'}" />
+                                <TextBlock Text="{Binding Path=Surname, StringFormat='{}{0}\&#x20;'}"/>
+                                <TextBlock Text="{Binding Path=Patranomic, StringFormat='{}{0}\&#x20;'}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                    </ListView>
+                </DockPanel>
+                <GridSplitter  ShowsPreview="False"   Grid.Column="0" Grid.RowSpan="2" Width="3" Panel.ZIndex="5000"/>
+        <GroupBox Grid.RowSpan="2" Grid.Column="1" Margin="5"
+            Foreground="DarkRed" Header="{Binding ItemEmployee.Surname}">
+           
+            <StackPanel Grid.RowSpan="2" Grid.Column="1">
+                <Label>Фамилия</Label>
+                <TextBox Text="{Binding ItemEmployee.Surname}"></TextBox>
+                <Label>Имя</Label>
+                <TextBox Text="{Binding ItemEmployee.Name}"></TextBox>
+                <Label>Отчество</Label>
+                <TextBox Text="{Binding ItemEmployee.Patranomic}"></TextBox>
+                <Label>Возраст</Label>
+                        <TextBox MaxLength="2" Text="{Binding ItemEmployee.Age}">
+                            
+                        </TextBox>
+                <Label>Department</Label>
+                <ComboBox Text="{Binding ItemEmployee.Department.DepartName}" IsEditable="True" x:Name="ComboDPT" Margin="1"/>
+                        <UniformGrid DockPanel.Dock="Bottom"  Rows="1">
+                            <Button  Content="Clear" Margin="1,5,1,5"/>
+                            <Button Content="Save File" Margin="1,5,1,5"/>
+                        </UniformGrid>
+                    </StackPanel>
+            </GroupBox>
 
     </Grid>
+    </TabItem>
+    </TabControl>
 </Window>
