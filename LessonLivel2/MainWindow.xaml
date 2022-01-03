@@ -21,7 +21,7 @@
                 <DockPanel>
                     <UniformGrid DockPanel.Dock="Bottom"  Rows="1">
                         <Button  Content="ADD New" Margin="5"/>
-                        <Button Content="Deleted " Margin="5"/>
+                        <Button  Click= "Deleted_Click" Content="Deleted " Margin="5"/>
                     </UniformGrid>
                     <ListView Margin="5" 
                   SelectionChanged="ListEmp_SelectionChanged" 
@@ -52,7 +52,7 @@
                 <TextBox Text="{Binding ItemEmployee.Patranomic}"></TextBox>
                 <Label>Возраст</Label>
                         <TextBox MaxLength="2" Text="{Binding ItemEmployee.Age}">
-                            
+
                         </TextBox>
                 <Label>Department</Label>
                 <ComboBox Text="{Binding ItemEmployee.Department.DepartName}" IsEditable="True" x:Name="ComboDPT" Margin="1"/>

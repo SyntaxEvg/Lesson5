@@ -78,5 +78,17 @@ namespace LessonLivel2
         {
            //тут проверка и сохранение обьекта 
         }
+
+
+        private void Deleted_Click(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show("Удалить запись?","Удаление",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question)== MessageBoxResult.Yes)
+            {
+                Employees.Remove(itemEmployee);
+                e.Handled = true;
+            }
+        }
     }
 }
