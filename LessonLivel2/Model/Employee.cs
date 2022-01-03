@@ -10,7 +10,7 @@ namespace LessonLivel2.Model
 
 
 
-    public class Employee
+    public class Employee: ICloneable
     {
         //public int Id { get; set; }
         public string Name { get; set; }
@@ -35,6 +35,13 @@ namespace LessonLivel2.Model
             Age = age;
             Department = a;
           
+        }
+
+       
+        public  object Clone()
+        {
+            return MemberwiseClone(); //копия 
+           
         }
     }
 }

@@ -55,10 +55,11 @@
 
                         </TextBox>
                 <Label>Department</Label>
-                <ComboBox Text="{Binding ItemEmployee.Department.DepartName}" IsEditable="True" x:Name="ComboDPT" Margin="1"/>
+                        <ComboBox  Text="{Binding ItemEmployee.Department.DepartName}" IsEditable="True" x:Name="ComboDPT" Margin="5"/>
                         <UniformGrid DockPanel.Dock="Bottom"  Rows="1">
-                            <Button  Content="Clear" Margin="1,5,1,5"/>
-                            <Button Content="Save File" Margin="1,5,1,5"/>
+                            <Button  Click="Clear_s"  Content="Clear" Margin="1,5,1,5"/>
+                            <Button Click="Save_s"  Content="Save" Margin="1,5,1,5"/>
+                            <Button Click="Save_new"  Content="Save, как новый" Margin="1,5,1,5"/>
                         </UniformGrid>
                     </StackPanel>
             </GroupBox>

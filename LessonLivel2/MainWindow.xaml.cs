@@ -90,5 +90,28 @@ namespace LessonLivel2
                 e.Handled = true;
             }
         }
+
+       
+
+        private void Clear_s(object sender, RoutedEventArgs e)
+        {
+
+             var temp =(Employee)ItemEmployee.Clone();
+             temp.Name = "";
+            temp.Patranomic = "";
+            temp.Surname = "";
+            temp.Age = 0;
+            ItemEmployee=temp;
+        }
+
+        private void Save_s(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Save_new(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
