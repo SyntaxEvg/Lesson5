@@ -72,6 +72,7 @@ namespace LessonLivel2
         private void ListEmp_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ItemEmployeeTemp= (Employee)ItemEmployee.Clone();
+            ItemEmployee = null;
         }
 
         private void Window_Closed(object sender, EventArgs e)
@@ -95,14 +96,7 @@ namespace LessonLivel2
 
         private void Clear_s(object sender, RoutedEventArgs e)
         {
-            //                <TextBox x:Name="Surnames" Te
-            //el>Имя</Label>
-            //    <TextBox x:Name="Names" Text=
-            //el>Отчество</Label>
-            //    <TextBox x:Name="Patranomic" 
-            //el>Возраст</Label>
-            //    <TextBox x:Name="Ages" MaxLen
-
+           
             Names.Text= ItemEmployeeTemp.Name = "";
             Patranomic.Text = ItemEmployeeTemp.Patranomic = "";
             Surnames.Text = ItemEmployeeTemp.Surname = "";
@@ -114,19 +108,30 @@ namespace LessonLivel2
 
         private void Save_s(object sender, RoutedEventArgs e)
         {
+            e.Handled= true;
             //var temp = (Employee)ItemEmployee.Clone();
             //Employees
         }
 
         private void Save_new(object sender, RoutedEventArgs e)
         {
-            var temp = (Employee)ItemEmployee.Clone();
-            var n = Employees.FirstOrDefault(x => temp.Name == x.Name && temp.Surname == x.Surname && temp.Age == x.Age);
+
+
+            var Model = new Employee()
+            {
+                 Name= Names.Text,
+                 Patranomic= Patranomic.Text,
+                 Surname= Surnames.Text,
+                 Age=  int.Parse(Ages.Text),
+                 Department=new Department(ComboDPT.SelectedItem.ToString()),
+            };
+
+            var n = Employees.FirstOrDefault(x => Model.Name == x.Name && Model.Surname == x.Surname && Model.Age == x.Age);
             if (n != null) return;
 
-            if (temp.Name.Length>0 && temp.Surname.Length>0 && temp.Age>0 && temp.Age<89)
+            if (Model.Name.Length>0 && Model.Surname.Length>0 && Model.Age>0 && Model.Age<89)
             {
-                Employees.Add(temp);
+                Employees.Add(Model);
             }
             
         }
