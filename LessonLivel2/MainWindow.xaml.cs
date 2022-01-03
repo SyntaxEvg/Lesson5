@@ -35,6 +35,7 @@ namespace LessonLivel2
                 PropertyChanged(this, new PropertyChangedEventArgs(prop));
         }
         public event PropertyChangedEventHandler? PropertyChanged;
+        public Employee ItemEmployeeTemp { get; set; }  
         private Employee itemEmployee;
         public Employee ItemEmployee
         { 
@@ -70,8 +71,7 @@ namespace LessonLivel2
 
         private void ListEmp_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ////ControlUP.DataContext= ItemEmployee;
-            //ComboDPT.Items.Add(ItemEmployee.Department.DepartName);
+            ItemEmployeeTemp= (Employee)ItemEmployee.Clone();
         }
 
         private void Window_Closed(object sender, EventArgs e)
@@ -95,23 +95,40 @@ namespace LessonLivel2
 
         private void Clear_s(object sender, RoutedEventArgs e)
         {
+            //                <TextBox x:Name="Surnames" Te
+            //el>Имя</Label>
+            //    <TextBox x:Name="Names" Text=
+            //el>Отчество</Label>
+            //    <TextBox x:Name="Patranomic" 
+            //el>Возраст</Label>
+            //    <TextBox x:Name="Ages" MaxLen
 
-             var temp =(Employee)ItemEmployee.Clone();
-             temp.Name = "";
-            temp.Patranomic = "";
-            temp.Surname = "";
-            temp.Age = 0;
-            ItemEmployee=temp;
+            Names.Text= ItemEmployeeTemp.Name = "";
+            Patranomic.Text = ItemEmployeeTemp.Patranomic = "";
+            Surnames.Text = ItemEmployeeTemp.Surname = "";
+            Ages.Text = (ItemEmployeeTemp.Age = 0).ToString();
+            ItemEmployee = ItemEmployeeTemp;
+
+
         }
 
         private void Save_s(object sender, RoutedEventArgs e)
         {
-
+            //var temp = (Employee)ItemEmployee.Clone();
+            //Employees
         }
 
         private void Save_new(object sender, RoutedEventArgs e)
         {
+            var temp = (Employee)ItemEmployee.Clone();
+            var n = Employees.FirstOrDefault(x => temp.Name == x.Name && temp.Surname == x.Surname && temp.Age == x.Age);
+            if (n != null) return;
 
+            if (temp.Name.Length>0 && temp.Surname.Length>0 && temp.Age>0 && temp.Age<89)
+            {
+                Employees.Add(temp);
+            }
+            
         }
     }
 }

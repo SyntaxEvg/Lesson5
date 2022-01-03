@@ -45,16 +45,15 @@
            
             <StackPanel Grid.RowSpan="2" Grid.Column="1">
                 <Label>Фамилия</Label>
-                <TextBox Text="{Binding ItemEmployee.Surname}"></TextBox>
+                        <TextBox x:Name="Surnames" Text="{Binding ItemEmployee.Surname}"></TextBox>
                 <Label>Имя</Label>
-                <TextBox Text="{Binding ItemEmployee.Name}"></TextBox>
+                        <TextBox x:Name="Names" Text="{Binding ItemEmployee.Name}"></TextBox>
                 <Label>Отчество</Label>
-                <TextBox Text="{Binding ItemEmployee.Patranomic}"></TextBox>
+                        <TextBox x:Name="Patranomic"  Text="{Binding ItemEmployee.Patranomic}"></TextBox>
                 <Label>Возраст</Label>
-                        <TextBox MaxLength="2" Text="{Binding ItemEmployee.Age}">
-
-                        </TextBox>
-                <Label>Department</Label>
+                        <TextBox x:Name="Ages" MaxLength="2" Text="{Binding ItemEmployee.Age}"/>
+                
+                        <Label>Department</Label>
                         <ComboBox  Text="{Binding ItemEmployee.Department.DepartName}" IsEditable="True" x:Name="ComboDPT" Margin="5"/>
                         <UniformGrid DockPanel.Dock="Bottom"  Rows="1">
                             <Button  Click="Clear_s"  Content="Clear" Margin="1,5,1,5"/>
