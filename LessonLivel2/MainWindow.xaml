@@ -41,20 +41,20 @@
                 </DockPanel>
                 <GridSplitter  ShowsPreview="False"   Grid.Column="0" Grid.RowSpan="2" Width="3" Panel.ZIndex="5000"/>
         <GroupBox Grid.RowSpan="2" Grid.Column="1" Margin="5"
-            Foreground="DarkRed" Header="{Binding ItemEmployee.Surname}">
+            Foreground="DarkRed" Header="{Binding ItemEmployeeTemp.Surname}">
            
             <StackPanel Grid.RowSpan="2" Grid.Column="1">
                 <Label>Фамилия</Label>
-                        <TextBox x:Name="Surnames" Text="{Binding ItemEmployee.Surname}"></TextBox>
+                        <TextBox x:Name="Surnames" Text="{Binding ItemEmployeeTemp.Surname}"></TextBox>
                 <Label>Имя</Label>
-                        <TextBox x:Name="Names" Text="{Binding ItemEmployee.Name}"></TextBox>
+                        <TextBox x:Name="Names" Text="{Binding ItemEmployeeTemp.Name}"></TextBox>
                 <Label>Отчество</Label>
-                        <TextBox x:Name="Patranomic"  Text="{Binding ItemEmployee.Patranomic}"></TextBox>
+                        <TextBox x:Name="Patranomic"  Text="{Binding ItemEmployeeTemp.Patranomic}"></TextBox>
                 <Label>Возраст</Label>
-                        <TextBox x:Name="Ages" MaxLength="2" Text="{Binding ItemEmployee.Age}"/>
+                        <TextBox x:Name="Ages" MaxLength="2" Text="{Binding ItemEmployeeTemp.Age}"/>
                 
                         <Label>Department</Label>
-                        <ComboBox  Text="{Binding ItemEmployee.Department.DepartName}" IsEditable="True" x:Name="ComboDPT" Margin="5"/>
+                        <ComboBox  Text="{Binding ItemEmployeeTemp.Department.DepartName}" IsEditable="True" x:Name="ComboDPT" Margin="5"/>
                         <UniformGrid DockPanel.Dock="Bottom"  Rows="1">
                             <Button  Click="Clear_s"  Content="Clear" Margin="1,5,1,5"/>
                             <Button Click="Save_s"  Content="Save" Margin="1,5,1,5"/>

@@ -35,7 +35,7 @@ namespace LessonLivel2
                 PropertyChanged(this, new PropertyChangedEventArgs(prop));
         }
         public event PropertyChangedEventHandler? PropertyChanged;
-        public Employee ItemEmployeeTemp { get; set; }  
+       
         private Employee itemEmployee;
         public Employee ItemEmployee
         { 
@@ -49,6 +49,21 @@ namespace LessonLivel2
                 OnPropertyChanged();
             }
         }//выбранный элемент
+        private Employee itemEmployeeTemp;
+        public Employee ItemEmployeeTemp
+        {
+            get
+            {
+                return itemEmployeeTemp;
+            }
+            set
+            {
+                itemEmployeeTemp = value;
+                OnPropertyChanged();
+            }
+        }//в графике
+
+
 
         public ObservableCollection<Employee> Employees { get; set; } = new ObservableCollection<Employee>();
          
@@ -71,8 +86,8 @@ namespace LessonLivel2
 
         private void ListEmp_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ItemEmployeeTemp= (Employee)ItemEmployee.Clone();
-            ItemEmployee = null;
+            ItemEmployeeTemp= (Employee)ItemEmployee?.Clone();
+            //ItemEmployee = null;
         }
 
         private void Window_Closed(object sender, EventArgs e)
@@ -96,33 +111,45 @@ namespace LessonLivel2
 
         private void Clear_s(object sender, RoutedEventArgs e)
         {
-           
-            Names.Text= ItemEmployeeTemp.Name = "";
-            Patranomic.Text = ItemEmployeeTemp.Patranomic = "";
-            Surnames.Text = ItemEmployeeTemp.Surname = "";
-            Ages.Text = (ItemEmployeeTemp.Age = 0).ToString();
-            ItemEmployee = ItemEmployeeTemp;
-
-
+            if (ItemEmployeeTemp !=null)
+            {
+                Names.Text = ItemEmployeeTemp.Name = "";
+                Patranomic.Text = ItemEmployeeTemp.Patranomic = "";
+                Surnames.Text = ItemEmployeeTemp.Surname = "";
+                Ages.Text = (ItemEmployeeTemp.Age = 0).ToString();
+                ItemEmployee = ItemEmployeeTemp;
+            }
         }
 
         private void Save_s(object sender, RoutedEventArgs e)
         {
-            e.Handled= true;
-            //var temp = (Employee)ItemEmployee.Clone();
-            //Employees
+            // ItemEmployee = ItemEmployeeTemp;//не сохраняет объект
+
+            if (ItemEmployeeTemp.Name == ItemEmployee.Name &&
+             ItemEmployeeTemp.Surname == ItemEmployee.Surname &&
+                 ItemEmployeeTemp.Age == ItemEmployee.Age &&
+                 ItemEmployeeTemp.Patranomic == ItemEmployee.Patranomic &&
+                ItemEmployeeTemp.Department.DepartName == ItemEmployee.Department.DepartName)
+                return;//если не совпадает  выходимю
+
+
+                Employees.Add(ItemEmployeeTemp);
+                Employees.Remove(ItemEmployee);
+                e.Handled = true;
+            
+
         }
 
         private void Save_new(object sender, RoutedEventArgs e)
         {
-
-
+            int age;
+            int.TryParse(Ages.Text, out age);
             var Model = new Employee()
             {
                  Name= Names.Text,
                  Patranomic= Patranomic.Text,
-                 Surname= Surnames.Text,
-                 Age=  int.Parse(Ages.Text),
+                 Surname= Surnames.Text,               
+                 Age = age,
                  Department=new Department(ComboDPT.SelectedItem.ToString()),
             };
 
