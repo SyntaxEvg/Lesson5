@@ -3,10 +3,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:LessonLivel2"
+        xmlns:local="clr-namespace:LessonLivel2" 
+        xmlns:ViewModel="clr-namespace:LessonLivel2.ViewModel"
         mc:Ignorable="d"
         Closed="Window_Closed"  
         Title="Employee" Height="450" Width="800" MaxHeight="450" MaxWidth="800">
+    <Window.DataContext>
+        <ViewModel:MainWindowViewModel></ViewModel:MainWindowViewModel>
+    </Window.DataContext>
     <TabControl>
     <TabItem Header="Сотрудники">
     <Grid>
@@ -20,11 +24,11 @@
         </Grid.RowDefinitions>
                 <DockPanel>
                     <UniformGrid DockPanel.Dock="Bottom"  Rows="1">
-                        <Button  Content="ADD New" Margin="5"/>
-                        <Button  Click= "Deleted_Click" Content="Deleted " Margin="5"/>
+                        <!--<Button  Content="ADD New" Margin="5"/>-->
+                        <Button Margin="5" Content="Deleted" Command="{Binding DeleteCommand}"></Button>
                     </UniformGrid>
                     <ListView Margin="5" 
-                  SelectionChanged="ListEmp_SelectionChanged" 
+                
                   SelectedItem="{Binding ItemEmployee}"
                   ItemsSource="{Binding Employees}" 
                   x:Name="ListEmp" Grid.RowSpan="2" Grid.Column="0">
@@ -45,20 +49,25 @@
            
             <StackPanel Grid.RowSpan="2" Grid.Column="1">
                 <Label>Фамилия</Label>
-                        <TextBox x:Name="Surnames" Text="{Binding ItemEmployeeTemp.Surname}"></TextBox>
+                        <TextBox  Text="{Binding ItemEmployeeTemp.Surname}"></TextBox>
                 <Label>Имя</Label>
-                        <TextBox x:Name="Names" Text="{Binding ItemEmployeeTemp.Name}"></TextBox>
+                        <TextBox  Text="{Binding ItemEmployeeTemp.Name}"></TextBox>
                 <Label>Отчество</Label>
-                        <TextBox x:Name="Patranomic"  Text="{Binding ItemEmployeeTemp.Patranomic}"></TextBox>
+                        <TextBox  Text="{Binding ItemEmployeeTemp.Patranomic}"></TextBox>
                 <Label>Возраст</Label>
-                        <TextBox x:Name="Ages" MaxLength="2" Text="{Binding ItemEmployeeTemp.Age}"/>
+                        <TextBox  MaxLength="2" Text="{Binding ItemEmployeeTemp.Age}"/>
                 
                         <Label>Department</Label>
-                        <ComboBox  Text="{Binding ItemEmployeeTemp.Department.DepartName}" IsEditable="True" x:Name="ComboDPT" Margin="5"/>
+                        <ComboBox  ItemsSource="{Binding BoxDepar}" Text="{Binding ItemEmployeeTemp.Department.DepartName}" IsEditable="True"  Margin="5"/>
                         <UniformGrid DockPanel.Dock="Bottom"  Rows="1">
-                            <Button  Click="Clear_s"  Content="Clear" Margin="1,5,1,5"/>
-                            <Button Click="Save_s"  Content="Save" Margin="1,5,1,5"/>
-                            <Button Click="Save_new"  Content="Save, как новый" Margin="1,5,1,5"/>
+                            <Button Command="{Binding Clear}"   Content="Clear" Margin="1,5,1,5"/>
+                            <Button Command="{Binding Edit}"  Content="Save" Margin="1,5,1,5"/>
+                            
+                            <Button  Margin="1,5,1,5"  
+                        Command="{Binding AddClient}">
+                                Save, как новый
+                            </Button>
+
                         </UniformGrid>
                     </StackPanel>
             </GroupBox>

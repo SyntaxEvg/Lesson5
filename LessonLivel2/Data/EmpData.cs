@@ -1,4 +1,5 @@
 ﻿using LessonLivel2.Model;
+using LessonLivel2.ViewModel;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -32,9 +33,9 @@ namespace LessonLivel2.Data
 
         public void SaveFile(ObservableCollection<Employee> employees)
         {
-            if (!File.Exists(MainWindow.Employee))
+            if (!File.Exists(MainWindowViewModel.Employee))
             {
-                File.WriteAllText(MainWindow.Employee, JsonConvert.SerializeObject(employees));
+                File.WriteAllText(MainWindowViewModel.Employee, JsonConvert.SerializeObject(employees));
             }
         }
 
