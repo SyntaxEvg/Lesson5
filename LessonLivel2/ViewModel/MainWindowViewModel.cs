@@ -133,13 +133,16 @@ namespace LessonLivel2.ViewModel
 
         private void ExecuteClearCommand(object obj)
         {
-            if (ItemEmployeeTemp != null) //не работает пока не придумал  как  очищать поля 
+            if (ItemEmployeeTemp != null)
             {
                  ItemEmployeeTemp.Name = "";
                 ItemEmployeeTemp.Patranomic = "";
                 ItemEmployeeTemp.Surname = "";
                 (ItemEmployeeTemp.Age = 0).ToString();
                 ItemEmployeeTemp.Department.DepartName = "";
+                var t =ItemEmployeeTemp.Clone() as Employee;
+                ItemEmployeeTemp=t;
+                t = null;
             }
         }
 
