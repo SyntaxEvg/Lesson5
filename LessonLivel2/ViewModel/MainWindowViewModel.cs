@@ -17,6 +17,8 @@ namespace LessonLivel2.ViewModel
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
+        public static bool flagMemory = true;
+
         public static string Employee = "Employee.json";
         public void OnPropertyChanged([CallerMemberName] string prop = "")
         {
@@ -30,9 +32,10 @@ namespace LessonLivel2.ViewModel
         {
             get
             {
+                
                 if (_Employees == null)
                 {
-                    _Employees = new LoadFiles().LoadFile();
+                    _Employees = new LessonLivel2.Data.DataObject()._Employee;                          
                     foreach (var item in Employees)
                     {
                         var dp = item.Department.DepartName;//добавляем все различные деп. которые встречали в данных 
@@ -239,7 +242,7 @@ namespace LessonLivel2.ViewModel
                     return false;
             }
             return true;
-        }//тавтологие кода на проверку содержим.
+        }
 
 
         public bool CanExecuteAddClientCommand(object parameter)//кнопка будет доступна только тогда, когда поля будут введены 

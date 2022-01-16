@@ -11,7 +11,7 @@ namespace LessonLivel2.Data.sql
         }
 
         public DbSet<Employee> Users { get; set; }
+        public DbSet<Department> Department { get; set; }
 
-       
     }
 }

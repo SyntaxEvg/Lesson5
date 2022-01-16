@@ -29,8 +29,8 @@ namespace LessonLivel2.SaveConfig
                 }
             }
             else
-            {
-              return  new EmpData().AddEmployee();
+            {                
+              return  new DataObject()._Employee;
             }
         }
        
