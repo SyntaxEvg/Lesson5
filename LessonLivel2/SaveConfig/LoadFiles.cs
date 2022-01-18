@@ -30,7 +30,7 @@ namespace LessonLivel2.SaveConfig
             }
             else
             {                
-              return  new DataObject()._Employee;
+              return  Task.Run(()=> new EmpData().AddEmployee()).GetAwaiter().GetResult();
             }
         }
        

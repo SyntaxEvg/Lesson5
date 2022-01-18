@@ -7,6 +7,7 @@
         xmlns:ViewModel="clr-namespace:LessonLivel2.ViewModel"
         mc:Ignorable="d"
         Closed="Window_Closed"  
+        Loaded="Window_Loaded" 
         Title="Employee" Height="450" Width="800" MaxHeight="450" MaxWidth="800">
     <Window.DataContext>
         <ViewModel:MainWindowViewModel></ViewModel:MainWindowViewModel>
@@ -24,13 +25,17 @@
         </Grid.RowDefinitions>
                 <DockPanel>
                     <UniformGrid DockPanel.Dock="Bottom"  Rows="1">
-                        <!--<Button  Content="ADD New" Margin="5"/>-->
-                        <Button Margin="5" Content="Deleted" Command="{Binding DeleteCommand}"></Button>
+                        <!--<ToggleButton Margin="5" ToolTip="True-выбран метод из Memory / false-sql"  Style="{StaticResource ToggleButtonStyle1}"/>-->
+                        <CheckBox Style="{DynamicResource CheckBoxText}" ToolTip="True-выбран метод из Memory / false-sql" Margin="5" Content="{Binding StrСhoice}" IsChecked="{Binding SelectData, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <Button  Margin="5" Content="UpdateSourse" Command="{Binding UpdateSourse}"></Button>
+                        <Button Margin="5" Content="Deleted" Command="{Binding Delete}"></Button>
+                        <!--<Label Content="{Binding SelCheck,StringFormat='{}{0} rfef'}"></Label><CheckBox x:Name="SelectData"></CheckBox>-->
                     </UniformGrid>
                     <ListView Margin="5" 
                 
                   SelectedItem="{Binding ItemEmployee}"
-                  ItemsSource="{Binding Employees}" 
+                  ItemsSource="{Binding Employees}"
+                           
                   x:Name="ListEmp" Grid.RowSpan="2" Grid.Column="0">
                     <ListView.ItemTemplate>
                         <DataTemplate>

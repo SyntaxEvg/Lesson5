@@ -5,7 +5,7 @@ namespace LessonLivel2.Data.sql
 {
     class UserContext : DbContext
     {
-        public UserContext(): base("DbConnection")
+        public  UserContext(): base("DbSyntaxEvgen")
         {
            
         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +14,10 @@ namespace LessonLivel2.Model
 
     public class Employee: ICloneable
     {
-        [Key]
+        /// <summary>
+        ///  The duplicate key value is (00000000-0000-0000-0000-000000000000). что  не возникала и был рандом
+        /// </summary>
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
         [Required]
         public string Name { get; set; }
@@ -23,8 +27,9 @@ namespace LessonLivel2.Model
         public string Patranomic { get; set; }
         [Required]
         public int Age { get; set; }
+        public Department Department_DepartName { get; set; }//связь 1 ко многим. именно тут  будет  лежать департамент,а не ниже
         [Required]
-        public Department Department { get; set; }
+        public virtual Department Department { get; set; }
 
         public Employee()
         {
@@ -34,6 +39,7 @@ namespace LessonLivel2.Model
 
         public Employee(string surn, string name, string patron,int age,Department a)
         {
+            
             Name = name;
             Surname = surn;
             Age = age;

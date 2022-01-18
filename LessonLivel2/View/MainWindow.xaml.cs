@@ -18,6 +18,7 @@ using LessonLivel2.Model;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using LessonLivel2.SaveConfig;
+using LessonLivel2.Data.sql;
 
 namespace LessonLivel2
 {
@@ -28,10 +29,23 @@ namespace LessonLivel2
         {          
             InitializeComponent();
         }
-        private void Window_Closed(object sender, EventArgs e)
+        private  async void Window_Closed(object sender, EventArgs e)
         {
             //тут проверка и сохранение обьекта 
+            using (var db = new UserContext())
+            {
+               await  db.SaveChangesAsync();
+            }
         }
 
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            using(var db=new UserContext())
+            {
+               await db.SaveChangesAsync();
+            }
+        }
+
+       
     }
 }

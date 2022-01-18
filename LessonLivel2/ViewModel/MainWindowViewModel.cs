@@ -1,4 +1,6 @@
 ﻿using LessonLivel2.Command;
+using LessonLivel2.Data;
+using LessonLivel2.Data.sql;
 using LessonLivel2.Model;
 using LessonLivel2.SaveConfig;
 using System;
@@ -17,28 +19,67 @@ namespace LessonLivel2.ViewModel
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
+        IData data;
         public static bool flagMemory = true;
 
         public static string Employee = "Employee.json";
-        public void OnPropertyChanged([CallerMemberName] string prop = "")
+        public async Task OnPropertyChanged([CallerMemberName] string prop = "")
         {
             if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(prop));
+            {
+               await Task.Run(() => PropertyChanged(this, new PropertyChangedEventArgs(prop)));
+
+
+            }
         }
-        public event PropertyChangedEventHandler? PropertyChanged;
+        public  event PropertyChangedEventHandler? PropertyChanged;
+
+
+        private bool _SelectData=false;
+        public bool SelectData// что выбрано sql or mem
+        {
+            get
+            {
+                return _SelectData;
+            }
+            set
+            {
+                _SelectData = value;
+                flagMemory = value;
+                OnPropertyChanged();
+
+                OnPropertyChanged("StrСhoice");
+            }
+        }
+
+        private string strСhoice;
+        public string StrСhoice //просто слово где чекбокс
+        {
+            get {
+                return SelectData==true ? "Выбрать Memory" : "Выбрать SQL";
+                }
+            set {
+                strСhoice = value;
+                OnPropertyChanged();
+            }
+        }
+
+
 
         ObservableCollection<Employee> _Employees;
-        public ObservableCollection<Employee> Employees
+        public   ObservableCollection<Employee> Employees
         {
             get
             {
                 
-                if (_Employees == null)
+                if (_Employees == null || _Employees.Count()==0)//запрос данных в источнике
                 {
-                    _Employees = new LessonLivel2.Data.DataObject()._Employee;                          
-                    foreach (var item in Employees)
+                    string dp = null;
+                    _Employees =Task.Run(()=>new LessonLivel2.Data.DataObject()._Employee).Result;                          
+                    foreach (var item in _Employees)
                     {
-                        var dp = item.Department.DepartName;//добавляем все различные деп. которые встречали в данных 
+                        
+                        dp = item.Department.DepartName;//добавляем все различные деп. которые встречали в данных 
                         if (BoxDepar == null)
                         {
                             BoxDepar = new ObservableCollection<string>();
@@ -51,6 +92,10 @@ namespace LessonLivel2.ViewModel
                     }
                 }
                 return _Employees;
+            }
+            set
+            {
+                _Employees = value;
             }
         } 
         public ObservableCollection<string> BoxDepar { get; set; }
@@ -65,7 +110,17 @@ namespace LessonLivel2.ViewModel
             set
             {
                 itemEmployee = value;
-                ItemEmployeeTemp=value;
+                ItemEmployeeTemp= value;//метод не клон всю глубину ,костыль))) 
+                if (ItemEmployeeTemp !=null)
+                {// этот танец нужен, для того,чтобы работать  с клон обьекта ,
+                 // и изменения не принимались до того времени пока не будет  сохранен
+                    ItemEmployeeTemp.Surname=value.Surname;
+                    ItemEmployeeTemp.Department=value.Department;
+                    ItemEmployeeTemp.Age=value.Age;
+                    itemEmployeeTemp.Patranomic=value?.Patranomic;
+                    itemEmployeeTemp.Name=value.Name;
+                }
+                
                 OnPropertyChanged();
             }
         }//выбранный элемент
@@ -84,10 +139,14 @@ namespace LessonLivel2.ViewModel
         }//в графике
 
         #region ICommand список команд для view
+        RelayCommand updateSourse;       
         RelayCommand _addClientCommand;
         RelayCommand _ClearCommand;
         RelayCommand _DeleteCommand;
         RelayCommand _EditCommand;
+
+        public  ICommand UpdateSourse => updateSourse ??= new RelayCommand( PerformUpdateSourse);
+
         public ICommand AddClient
         {
             get
@@ -166,6 +225,11 @@ namespace LessonLivel2.ViewModel
                 if (!item.Contains(nameDep, StringComparison.OrdinalIgnoreCase))
                 {
                     BoxDepar.Add(nameDep);//добавление нового вида департамент
+                    if (!flagMemory)
+                    {
+                        var de =new Department { DepartName = nameDep };
+                        Task.Run(() => new SqlData().AddDep(de));
+                    }
                     break;
                 }
             }
@@ -185,7 +249,10 @@ namespace LessonLivel2.ViewModel
 
             Employees.Add(ItemEmployeeTemp);
             Employees.Remove(ItemEmployee);
-
+            if (!flagMemory)
+            {
+                Task.Run(() => data.Edit(ItemEmployee)).GetAwaiter();
+            }
         }
 
       
@@ -205,6 +272,10 @@ namespace LessonLivel2.ViewModel
                MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
                 Employees.Remove(itemEmployee);
+                if(!flagMemory) {
+                    Task.Run(() => new SqlData().Delete(itemEmployee));
+                                }
+
             }
         }
 
@@ -217,7 +288,7 @@ namespace LessonLivel2.ViewModel
                 Patranomic = ItemEmployeeTemp.Patranomic,
                 Surname = ItemEmployeeTemp.Surname,
                 Age = ItemEmployeeTemp.Age,
-                Department = new Department(ItemEmployeeTemp.Department.DepartName),
+                Department = new Department {DepartName= ItemEmployeeTemp.Department.DepartName },
             };
             var n = Employees.FirstOrDefault(x => Model.Name == x.Name && Model.Surname == x.Surname && Model.Age == x.Age);
             if (n != null) 
@@ -225,6 +296,10 @@ namespace LessonLivel2.ViewModel
 
             Employees.Add(Model);
             ItemEmployeeTemp = null;
+            if (!flagMemory)
+            {
+                Task.Run(() => data.Add(Model)).GetAwaiter();
+            }
         }
 
         bool Save_EditBool()
@@ -248,6 +323,42 @@ namespace LessonLivel2.ViewModel
         public bool CanExecuteAddClientCommand(object parameter)//кнопка будет доступна только тогда, когда поля будут введены 
         {
             return Save_EditBool();
+        }
+
+        protected bool SetProperty<T>(ref T field, T newValue, [CallerMemberName] string propertyName = null)
+        {
+            if (!Equals(field, newValue))
+            {
+                field = newValue;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+                return true;
+            }
+
+            return false;
+        }
+
+       
+      
+        private  void PerformUpdateSourse(object commandParameter)
+        {
+            string str = null;
+            if (!StrСhoice.Contains("Memory"))
+            {
+                flagMemory = true;
+                str = "Memory";
+            }
+            else { flagMemory = false; str = "Sql"; }
+
+            if (MessageBox.Show($"Обновить источник данных на {str}", "UpdateSourse",
+              MessageBoxButton.YesNo,
+              MessageBoxImage.Question) == MessageBoxResult.Yes)
+            {
+                Employees.Clear();
+                OnPropertyChanged("Employees");//вызов свойства для обновление данных 
+            }
+
+
+            
         }
     }
 }

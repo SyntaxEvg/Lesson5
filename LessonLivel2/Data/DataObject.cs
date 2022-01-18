@@ -21,12 +21,12 @@ namespace LessonLivel2.Data
             get {
                 if (MainWindowViewModel.flagMemory) // если выбран способ не из базы грузим это
                 {
-                    employees = new LoadFiles().LoadFile();
+                    employees =  Task.Run(() => new LoadFiles().LoadFile()).GetAwaiter().GetResult();
                     SaveFile(employees);//save file
                 }
                 else
                 {
-                    employees = new SqlData().AddEmployee();//из бд извлекаем
+                    employees = Task.Run(()=> new SqlData().AddEmployee()).Result;//из бд извлекаем
                 }
                 return employees; 
             }
@@ -35,10 +35,10 @@ namespace LessonLivel2.Data
             }
         }
 
-        public void SaveFile(ObservableCollection<Employee> employees)
+        public async Task SaveFile(ObservableCollection<Employee> employees)
         {
            
-                File.WriteAllText(MainWindowViewModel.Employee, JsonConvert.SerializeObject(employees));
+               await File.WriteAllTextAsync(MainWindowViewModel.Employee, JsonConvert.SerializeObject(employees));
             
         }
     }
