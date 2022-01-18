@@ -19,23 +19,30 @@ namespace LessonLivel2.ViewModel
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
-        IData data;
+        #region Field
+        private Employee itemEmployeeTemp;
+        private Employee itemEmployee;
+        ObservableCollection<Employee> _Employees;
+        private string strСhoice;
+        private bool _SelectData = false;
+        IData data;//интерф. для работы  бд
         public static bool flagMemory = true;
 
         public static string Employee = "Employee.json";
-        public async Task OnPropertyChanged([CallerMemberName] string prop = "")
+        #endregion
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        
+        public  void OnPropertyChanged([CallerMemberName] string prop = "")
         {
             if (PropertyChanged != null)
             {
-               await Task.Run(() => PropertyChanged(this, new PropertyChangedEventArgs(prop)));
+                PropertyChanged(this, new PropertyChangedEventArgs(prop));
 
 
             }
         }
-        public  event PropertyChangedEventHandler? PropertyChanged;
-
-
-        private bool _SelectData=false;
+      
         public bool SelectData// что выбрано sql or mem
         {
             get
@@ -47,16 +54,14 @@ namespace LessonLivel2.ViewModel
                 _SelectData = value;
                 flagMemory = value;
                 OnPropertyChanged();
-
                 OnPropertyChanged("StrСhoice");
             }
         }
-
-        private string strСhoice;
+       
         public string StrСhoice //просто слово где чекбокс
         {
             get {
-                return SelectData==true ? "Выбрать Memory" : "Выбрать SQL";
+                return SelectData ? "Выбрать Memory" : "Выбрать SQL";
                 }
             set {
                 strСhoice = value;
@@ -64,10 +69,7 @@ namespace LessonLivel2.ViewModel
             }
         }
 
-
-
-        ObservableCollection<Employee> _Employees;
-        public   ObservableCollection<Employee> Employees
+        public ObservableCollection<Employee> Employees
         {
             get
             {
@@ -91,16 +93,31 @@ namespace LessonLivel2.ViewModel
                         }
                     }
                 }
+               
                 return _Employees;
             }
             set
             {
                 _Employees = value;
+                OnPropertyChanged();
             }
         } 
         public ObservableCollection<string> BoxDepar { get; set; }
-        
-        private Employee itemEmployee;
+
+        public string depert;
+
+        private int myVar;
+
+        public string Depert
+        {
+            get { return depert; }
+            set {
+                depert = value; OnPropertyChanged(); 
+            }
+        }
+
+
+
         public Employee ItemEmployee
         {
             get
@@ -110,31 +127,29 @@ namespace LessonLivel2.ViewModel
             set
             {
                 itemEmployee = value;
-                ItemEmployeeTemp= value;//метод не клон всю глубину ,костыль))) 
+                ItemEmployeeTemp= value;
                 if (ItemEmployeeTemp !=null)
-                {// этот танец нужен, для того,чтобы работать  с клон обьекта ,
-                 // и изменения не принимались до того времени пока не будет  сохранен
-                    ItemEmployeeTemp.Surname=value.Surname;
-                    ItemEmployeeTemp.Department=value.Department;
-                    ItemEmployeeTemp.Age=value.Age;
-                    itemEmployeeTemp.Patranomic=value?.Patranomic;
-                    itemEmployeeTemp.Name=value.Name;
+                {
+                    ItemEmployeeTemp = (Employee)ItemEmployee.Clone();
+                    Depert = ItemEmployee.Department?.DepartName.Length>0 ? ItemEmployee.Department.DepartName :"null";
                 }
-                
-                OnPropertyChanged();
+
+                OnPropertyChanged("ItemEmployee");
             }
         }//выбранный элемент
-        private Employee itemEmployeeTemp;
+       
         public Employee ItemEmployeeTemp
         {
             get
             {
                 return itemEmployeeTemp;
+                
             }
             set
             {
                 itemEmployeeTemp = value;
                 OnPropertyChanged();
+                
             }
         }//в графике
 
@@ -201,7 +216,7 @@ namespace LessonLivel2.ViewModel
                 ItemEmployeeTemp.Patranomic = "";
                 ItemEmployeeTemp.Surname = "";
                 (ItemEmployeeTemp.Age = 0).ToString();
-                ItemEmployeeTemp.Department.DepartName = "";
+                Depert = "";
                 var t =ItemEmployeeTemp.Clone() as Employee;
                 ItemEmployeeTemp=t;
                 t = null;
@@ -219,20 +234,20 @@ namespace LessonLivel2.ViewModel
 
         void AddDepartament()
         {
-            var nameDep = ItemEmployeeTemp.Department.DepartName;
-            foreach (var item in BoxDepar)
-            {
-                if (!item.Contains(nameDep, StringComparison.OrdinalIgnoreCase))
-                {
-                    BoxDepar.Add(nameDep);//добавление нового вида департамент
+            var nameDep = Depert.ToLower().Trim(); 
+
+            var t = BoxDepar.Any(x => x.ToLower().Trim().Contains(nameDep));//если сущ.в последовательности 
+
+            if (t == true) return;
+
+                    BoxDepar.Add(nameDep.Trim());//добавление нового вида департамент
                     if (!flagMemory)
                     {
                         var de =new Department { DepartName = nameDep };
-                        Task.Run(() => new SqlData().AddDep(de));
+                        Task.Run(() =>data.AddDep(de));
                     }
-                    break;
-                }
-            }
+                
+            
         }
 
 
@@ -243,12 +258,15 @@ namespace LessonLivel2.ViewModel
             ItemEmployeeTemp.Surname == ItemEmployee.Surname &&
                 ItemEmployeeTemp.Age == ItemEmployee.Age &&
                 ItemEmployeeTemp.Patranomic == ItemEmployee.Patranomic &&
-               ItemEmployeeTemp.Department.DepartName == ItemEmployee.Department.DepartName)
+               Depert == ItemEmployee.Department.DepartName)
                 return;//если не совпадает  выходимю
+           
+            var index =Employees.IndexOf(ItemEmployee);
+            if (index != -1)
+            {
+                Employees[index] = ItemEmployeeTemp;//ObservableCollection для редактир получаем индекс с помощью IndexOf
 
-
-            Employees.Add(ItemEmployeeTemp);
-            Employees.Remove(ItemEmployee);
+            }
             if (!flagMemory)
             {
                 Task.Run(() => data.Edit(ItemEmployee)).GetAwaiter();
@@ -272,8 +290,8 @@ namespace LessonLivel2.ViewModel
                MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
                 Employees.Remove(itemEmployee);
-                if(!flagMemory) {
-                    Task.Run(() => new SqlData().Delete(itemEmployee));
+                if (!flagMemory) {
+                    Task.Run(() =>data.Delete(itemEmployee));
                                 }
 
             }
@@ -288,9 +306,11 @@ namespace LessonLivel2.ViewModel
                 Patranomic = ItemEmployeeTemp.Patranomic,
                 Surname = ItemEmployeeTemp.Surname,
                 Age = ItemEmployeeTemp.Age,
-                Department = new Department {DepartName= ItemEmployeeTemp.Department.DepartName },
+                Department = new Department {DepartName= Depert },
             };
-            var n = Employees.FirstOrDefault(x => Model.Name == x.Name && Model.Surname == x.Surname && Model.Age == x.Age);
+            var n = Employees.FirstOrDefault(x => Model.Name == x.Name && 
+            Model.Surname == x.Surname && 
+            Model.Age == x.Age);
             if (n != null) 
                 return;
 
@@ -325,17 +345,17 @@ namespace LessonLivel2.ViewModel
             return Save_EditBool();
         }
 
-        protected bool SetProperty<T>(ref T field, T newValue, [CallerMemberName] string propertyName = null)
-        {
-            if (!Equals(field, newValue))
-            {
-                field = newValue;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-                return true;
-            }
+        //protected bool SetProperty<T>(ref T field, T newValue, [CallerMemberName] string propertyName = null)
+        //{
+        //    if (!Equals(field, newValue))
+        //    {
+        //        field = newValue;
+        //        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        //        return true;
+        //    }
 
-            return false;
-        }
+        //    return false;
+        //}
 
        
       
@@ -360,5 +380,6 @@ namespace LessonLivel2.ViewModel
 
             
         }
+       
     }
 }

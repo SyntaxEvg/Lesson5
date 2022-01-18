@@ -63,10 +63,10 @@
                         <TextBox  MaxLength="2" Text="{Binding ItemEmployeeTemp.Age}"/>
                 
                         <Label>Department</Label>
-                        <ComboBox  ItemsSource="{Binding BoxDepar}" Text="{Binding ItemEmployeeTemp.Department.DepartName}" IsEditable="True"  Margin="5"/>
+                        <ComboBox  ItemsSource="{Binding BoxDepar}" Text="{Binding Depert}" IsEditable="True"  Margin="5"/>
                         <UniformGrid DockPanel.Dock="Bottom"  Rows="1">
                             <Button Command="{Binding Clear}"   Content="Clear" Margin="1,5,1,5"/>
-                            <Button Command="{Binding Edit}"  Content="Save" Margin="1,5,1,5"/>
+                            <Button Command="{Binding Edit}"  Content="Edit" Margin="1,5,1,5"/>
                             
                             <Button  Margin="1,5,1,5"  
                         Command="{Binding AddClient}">

@@ -36,7 +36,7 @@ namespace LessonLivel2.Model
 
         }
 
-
+       
         public Employee(string surn, string name, string patron,int age,Department a)
         {
             
@@ -49,10 +49,10 @@ namespace LessonLivel2.Model
           
         }
 
-       
-        public  object Clone()
+     
+        public object Clone()
         {
-            return MemberwiseClone(); //копия 
+            return  MemberwiseClone(); //копия 
            
         }
     }

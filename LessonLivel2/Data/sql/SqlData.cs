@@ -22,7 +22,7 @@ namespace LessonLivel2.Data.sql
         { 
             using (  UserContext db = new  UserContext())
             {
-                List<Employee> users = await  db.Users.AsNoTracking().Include((x)=> x.Department).ToListAsync(); //выгружаю всю связь 
+                List<Employee> users = await  db.Users.Include((x)=> x.Department).ToListAsync(); //выгружаю всю связь 
                 foreach (var u in users)
                 {
                     Data.Add(u);

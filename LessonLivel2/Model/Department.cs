@@ -12,10 +12,6 @@ namespace LessonLivel2.Model
 
          public virtual ICollection<Employee> Players { get; set; }
 
-        //public Department(string name)
-        //{
-        //    //Id = Guid.NewGuid();
-        //    DepartName = name;
-        //}
+       
     }
 }
