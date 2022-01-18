@@ -1,11 +1,21 @@
-﻿namespace LessonLivel2.Model
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace LessonLivel2.Model
 {
     public class Department
     {
+         [Key] 
         public string DepartName { get; set; }
-        public Department(string name)
-        {
-            DepartName = name;
-        }
+
+         public virtual ICollection<Employee> Players { get; set; }
+
+        //public Department(string name)
+        //{
+        //    //Id = Guid.NewGuid();
+        //    DepartName = name;
+        //}
     }
 }

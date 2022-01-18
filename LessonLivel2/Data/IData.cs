@@ -10,6 +10,13 @@ namespace LessonLivel2.Data
 {
     internal interface IData
     {
-        ObservableCollection<Employee> AddEmployee();
+         Task<ObservableCollection<Employee>> AddEmployee();
+        Task<ObservableCollection<Employee>> GetData();
+        Task<bool> DeleteData();
+        Task<bool> Edit(Employee employee);
+        Task<bool> AddDep(Department dep);
+        Task<bool> Delete(Employee employee);
+        Task<bool> Add(Employee employee);
+
     }
 }

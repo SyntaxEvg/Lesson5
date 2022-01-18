@@ -11,16 +11,17 @@ using System.Threading.Tasks;
 
 namespace LessonLivel2.Data
 {
-    public class EmpData : IData
+    public class EmpData
     {
       
-        public ObservableCollection<Employee> AddEmployee()
+        public async Task<ObservableCollection<Employee>> AddEmployee()
         {
             var dt = new ObservableCollection<Employee>();
 
-            foreach (var item in new ListEMP().GetEnumerator())//извлечить тестовые данные 
+            foreach (var item in  new ListEMP().GetEnumerator())//извлечить тестовые данные 
             {
-                dt.Add(item);
+               var temp= item as Employee;
+               dt.Add(temp);
             }
 
             return dt;
