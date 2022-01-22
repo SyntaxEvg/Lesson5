@@ -14,12 +14,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Collections.ObjectModel;
 using System.Linq;
-using LessonLivel2.Model;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using LessonLivel2.SaveConfig;
-using LessonLivel2.Data.sql;
-
 namespace LessonLivel2
 {
     public partial class MainWindow : Window
@@ -31,19 +28,12 @@ namespace LessonLivel2
         }
         private  async void Window_Closed(object sender, EventArgs e)
         {
-            //тут проверка и сохранение обьекта 
-            using (var db = new UserContext())
-            {
-               await  db.SaveChangesAsync();
-            }
+          
         }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            using(var db=new UserContext())
-            {
-               await db.SaveChangesAsync();
-            }
+           
         }
 
        

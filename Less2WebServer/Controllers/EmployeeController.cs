@@ -1,67 +1,85 @@
-﻿using LessonLivel2.Model;
+﻿using Lesson2.Server;
+using LessonLivel2.Data;
+using LessonLivel2.Data.sql;
+using LessonLivel2.ModelData;
+using LessonLivel2.ModelData.Model;
+using Microsoft.AspNetCore.Mvc;
+using ModelData.Data.ProviderType;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Data.Entity;
-using System.Threading;
+using System.Linq;
+using System.Net;
+using System.Net.WebSockets;
+using System.Threading.Tasks;
 
-namespace LessonLivel2.Data.sql
+namespace Less2WebServer.Controllers
 {
-    public class SqlData: IData
+    public class EmployeeController : Controller
     {
-       // UserContext db = new UserContext();
+        static UserContext db = new UserContext();
+        ObservableCollection<ViewCLassObjectSoap.Employee> Data = new();
 
-
-        public ObservableCollection<Employee> Data = new ObservableCollection<Employee>();
-
-        public async Task<ObservableCollection<Employee>> GetData()
-        { 
-            using (  UserContext db = new  UserContext())
-            {
-                List<Employee> users = await  db.Users.Include((x)=> x.Department).ToListAsync(); //выгружаю всю связь 
-                foreach (var u in users)
-                {
-                    Data.Add(u);
-                }
-            }
-            return Data;
+        [HttpGet]
+        [Route("api/Index")]
+        public IActionResult Index()
+        {
+            return View();
         }
-        public async Task<bool> DeleteData()//удалить все не реализовано,
+        [HttpGet]
+        [Route("api/GetData")]
+        public async Task<JsonResult> GetData()
+        {
+            //using (UserContext db = new UserContext())
+            //{
+                List<Employee> users = await db.Users.Include((x) => x.Department).ToListAsync().ConfigureAwait(false); //выгружаю всю связь 
+                var t = new ConvertEFtoSoapXaml(users).ToEmplXaml();
+                return Json(t);
+
+            //}
+        }
+
+
+        [Route("api/DeleteData")]
+        public async Task<JsonResult> DeleteData()//удалить все не реализовано,
         {
             using (UserContext db = new UserContext())
             {
                 var users = await db.Users.ToListAsync();
                 db.Users.RemoveRange(users);
                 await db.SaveChangesAsync();
-                return true;
+
+                return Json(true);
             }
-            return false;
         }
 
-        public async Task<bool> Edit(Employee employee)
+        [Route("api/Edit")]
+        public async Task<JsonResult> Edit(Employee employee)
         {
+            //var tg = JsonConvert.DeserializeObject<ObservableCollection<Employee>>(products1);
 
+            List<Employee> test = new List<Employee>();
+            test.Add(employee);
             using (UserContext db = new UserContext())
             {
-                var users =await  db.Users.FirstOrDefaultAsync((x)=> employee.Id == x.Id);//для примера по  айди ))
+                var users = await db.Users.FirstOrDefaultAsync((x) => employee.Id == x.Id);//для примера по  айди ))
                 if (users != null)
                 {
-                    users = employee;
+                    var users1 = new ConvertEFtoSoapXaml(test).ToEmplXaml();
+                    // users = employee;
                     await db.SaveChangesAsync();
-
                 }
-                else return false;
+                else return Json(false);
             }
-            return true;
+            return Json(true);
         }
 
-        public async Task<bool> AddDep(Department dep )
+        [Route("api/AddDep")]
+        public async Task<JsonResult> AddDep(Department dep)
         {
-            using (UserContext db = new UserContext())
+            using (UserContext db = new())
             {
                 var departmentNew = await db.Department.FirstOrDefaultAsync((x) => dep.DepartName.ToLower().Trim() == x.DepartName.ToLower().Trim());
                 if (departmentNew == null)
@@ -70,80 +88,87 @@ namespace LessonLivel2.Data.sql
                     await db.SaveChangesAsync();
 
                 }
-                else return false;
+                else return Json(false);
             }
-            return true;
+            return Json(true);
         }
 
-
-            public async Task<bool> Delete(Employee employee)
+        [Route("api/Delete")]
+        public async Task<JsonResult> Delete(Employee employee)//working
         {
 
-            using (UserContext db = new UserContext())
-            {
+            //using (UserContext db = new UserContext())
+            //{
                 var users = await db.Users.FirstOrDefaultAsync((x) => employee.Id == x.Id);
                 if (users != null)
                 {
                     users = employee;
                     db.Users.Remove(users);
-                    await db.SaveChangesAsync();
+                     db.SaveChanges();
 
                 }
-                else return false;
-            }
-            return true;
+                else return Json(false);
+            //}
+            return Json(true);
         }
 
-        public async Task<bool> Add(Employee employee)
+        [Route("api/Add")] [HttpPost]
+        public async Task<JsonResult> Add([FromBody] string employee)
         {
 
-            using (UserContext db = new UserContext())
-            {
-                var users =await db.Users.FirstOrDefaultAsync((x) => employee.Id == x.Id);
+            var emp = JsonConvert.DeserializeObject<Employee>(employee);
+
+            //using (UserContext db = new UserContext())
+            //{
+                var users = await db.Users.FirstOrDefaultAsync((x) => emp.Id == x.Id);
                 if (users == null)
                 {
-                    db.Users.Add(employee);
-                    await db.SaveChangesAsync();
+
+                    db.Users.Add(emp);
+                    db.Users.SaveChanges();
                 }
-                else return false;
-            }
-            return true;
+                else return Json(false);
+            //}
+            return Json(true); 
         }
 
-        //UserContext -делаю через using,так как приложению  не требует постоянной открытой бд
-        public async Task<ObservableCollection<Employee>> AddEmployee()
+   
+        [Route("api/AddEmployee")]
+        public async Task<JsonResult> AddEmployee(bool flagMemory)
         {
             await GetData();//запрос данных
             if (Data.Count() == 0)//если бд  пустая сначала заполним ее и проинциц.
             {
-                return await Init();
+                 var y= await Init(flagMemory);
+                return Json(y);
             }
-            return Data;
+            return Json(Data);
         }
 
-        public async  Task<ObservableCollection<Employee>> Init()
+
+        public async Task<ObservableCollection<ViewCLassObjectSoap.Employee>> Init(bool flagMemory)
         {
-            
+
             using (UserContext db = new UserContext())
             {
                 db.Configuration.AutoDetectChangesEnabled = false; //Добавляем большое число записей в некоторую таблицу
 
-               
+
                 List<Employee> employees = new List<Employee>();//собираем всех юзеров что поступили к нам
-                foreach (var collection in new ListEMP().GetEnumerator())//помещаем в бд  данные
+                foreach (var collection in new ListEMP(flagMemory).GetEnumerator())//помещаем в бд  данные
                 {
 
                     if (collection is List<Department>)
                     {
-                       var colDep= collection as List<Department>;
-                        var DEpLocal =await db.Department.ToListAsync();                      
+                        var colDep = collection as List<Department>;
+                        var DEpLocal = await db.Department.ToListAsync();
                         foreach (var department in colDep)
                         {
                             var Dexists = DEpLocal.FirstOrDefault(x => x.DepartName == department.DepartName);
-                                if (Dexists ==null)
-                                {
+                            if (Dexists == null)
+                            {
                                 db.Department.Add(department);
-                                }
+                            }
                         }
                     }
                     else if (collection is List<Employee>)
@@ -161,11 +186,11 @@ namespace LessonLivel2.Data.sql
                             // когда закончили сохранили
                             // сначала базу департаментов  и поместили в лист
                             // Юзеров для дальнейшего распределния
-                            
+
                         }
                     }
-                   
-                }                            
+
+                }
                 db.ChangeTracker.DetectChanges();//Обновляем сведения об изменениях. Работает быстро
                 try
                 {
@@ -173,10 +198,10 @@ namespace LessonLivel2.Data.sql
                     //раскидаем их рандомно
                     var rand = new Random();
                     var dep = db.Department.ToList();
-                    
+
                     foreach (var item in employees)//помещаем в бд  данные
                     {
-                        var emp =item;
+                        var emp = item;
                         int ind = rand.Next(dep.Count);
                         emp.Department = dep[ind];
                         db.Users.Add(emp);//при первом создании бд  данные деп. будут рандомные
@@ -186,18 +211,22 @@ namespace LessonLivel2.Data.sql
                 }
                 catch (Exception ex)
                 {
-                    if (MessageBox.Show($"Да - выйти из приложения {ex.StackTrace}", "ErrorDB",
-                         MessageBoxButton.YesNo,
-                         MessageBoxImage.Question) == MessageBoxResult.Yes)
-                    {
+                    //if (MessageBox.Show($"Да - выйти из приложения {ex.StackTrace}", "ErrorDB",
+                    //     MessageBoxButton.YesNo,
+                    //     MessageBoxImage.Question) == MessageBoxResult.Yes)
+                    //{
 
-                        Environment.Exit(0);
-                    }
-                    return Data;                 
-                }               
+                    //    Environment.Exit(0);
+                    //}
+
+                    return Data;// empty return
+                }
             }
-           await GetData();//запрос данных
+            await GetData();//запрос данных
             return Data;
         }
+
+        
+
     }
 }
