@@ -1,8 +1,9 @@
 ﻿using LessonLivel2.Command;
 using LessonLivel2.Data;
-using LessonLivel2.Data.sql;
-using LessonLivel2.Model;
-using LessonLivel2.SaveConfig;
+using LessonLivel2.ModelData;
+using LessonLivel2.ModelData.Model;
+//using LessonLivel2.ModelData;
+//using LessonLivel2.ModelData.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,21 +15,27 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using static ServiceReference.WebServiceSoapClient;
+using DataObject = LessonLivel2.Data.DataObject;
+//using DataObject = LessonLivel2.Data.DataObject;
+using Task = System.Threading.Tasks.Task;
+//using DataObject = LessonLivel2.Data.DataObject;
 
 namespace LessonLivel2.ViewModel
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
+        //WebServiceSoapClient webServiceSoapClient = new WebServiceSoapClient(EndpointConfiguration.WebServiceSoap);
         #region Field
         private Employee itemEmployeeTemp;
         private Employee itemEmployee;
         ObservableCollection<Employee> _Employees;
         private string strСhoice;
         private bool _SelectData = false;
-        IData data;//интерф. для работы  бд
+        //IData data;//интерф. для работы  бд
         public static bool flagMemory = true;
 
-        public static string Employee = "Employee.json";
+        public readonly string NameFileList = "Employee.json";
         #endregion
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -73,11 +80,14 @@ namespace LessonLivel2.ViewModel
         {
             get
             {
-                
+                //new Client();
                 if (_Employees == null || _Employees.Count()==0)//запрос данных в источнике
                 {
                     string dp = null;
-                    _Employees =Task.Run(()=>new LessonLivel2.Data.DataObject()._Employee).Result;                          
+
+                     _Employees =Task.Run(()=>new DataObject(flagMemory, NameFileList)._Employee).GetAwaiter().GetResult();                          
+
+                   // _Employees = new LessonLivel2.Data.DataObject(flagMemory, NameFileList)._Employee;                          
                     foreach (var item in _Employees)
                     {
                         
@@ -217,7 +227,7 @@ namespace LessonLivel2.ViewModel
                 ItemEmployeeTemp.Surname = "";
                 (ItemEmployeeTemp.Age = 0).ToString();
                 Depert = "";
-                var t =ItemEmployeeTemp.Clone() as Employee;
+                var t = ItemEmployeeTemp.Clone() as Employee;
                 ItemEmployeeTemp=t;
                 t = null;
             }
@@ -244,7 +254,7 @@ namespace LessonLivel2.ViewModel
                     if (!flagMemory)
                     {
                         var de =new Department { DepartName = nameDep };
-                        Task.Run(() =>data.AddDep(de));
+                        //Task.Run(() =>data.AddDep(de));
                     }
                 
             
@@ -269,7 +279,7 @@ namespace LessonLivel2.ViewModel
             }
             if (!flagMemory)
             {
-                Task.Run(() => data.Edit(ItemEmployee)).GetAwaiter();
+              //  Task.Run(() => data.Edit(ItemEmployee)).GetAwaiter();
             }
         }
 
@@ -291,7 +301,7 @@ namespace LessonLivel2.ViewModel
             {
                 Employees.Remove(itemEmployee);
                 if (!flagMemory) {
-                    Task.Run(() =>data.Delete(itemEmployee));
+                    //Task.Run(() =>data.Delete(itemEmployee));
                                 }
 
             }
@@ -318,7 +328,7 @@ namespace LessonLivel2.ViewModel
             ItemEmployeeTemp = null;
             if (!flagMemory)
             {
-                Task.Run(() => data.Add(Model)).GetAwaiter();
+                Task.Run(() => DataObject.client.Add(Model)).GetAwaiter();
             }
         }
 
@@ -345,19 +355,7 @@ namespace LessonLivel2.ViewModel
             return Save_EditBool();
         }
 
-        //protected bool SetProperty<T>(ref T field, T newValue, [CallerMemberName] string propertyName = null)
-        //{
-        //    if (!Equals(field, newValue))
-        //    {
-        //        field = newValue;
-        //        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        //        return true;
-        //    }
-
-        //    return false;
-        //}
-
-       
+     
       
         private  void PerformUpdateSourse(object commandParameter)
         {

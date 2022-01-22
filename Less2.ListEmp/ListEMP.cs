@@ -1,4 +1,5 @@
-﻿using LessonLivel2.Model;
+﻿using LessonLivel2.ModelData;
+using LessonLivel2.ModelData.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,26 +9,32 @@ using System.Threading.Tasks;
 
 namespace LessonLivel2.Data
 {
-    internal class ListEMP
+    public class ListEMP
     {
+        bool FlagMemory=false;
+        public ListEMP(bool flagMemory)
+        {
+            FlagMemory=flagMemory;
+        }
+
+
         public IEnumerable<object> GetEnumerator()
         {
+            Random rand = new Random();
             var TestData = new ObservableCollection<Employee>();
-
-           
-
-            if (ViewModel.MainWindowViewModel.flagMemory)
+            if (FlagMemory)
             {
-                TestData.Add(new Employee("Панкратова", "Мира", "Павловна", 23, new Department { DepartName = "МВД" }));
-                TestData.Add(new Employee("Антипова", "София", "Егоровна", 27, new Department { DepartName = "Минтруд" }));
-                TestData.Add(new Employee("Морозов", "Дмитрий", "Иванович", 33, new Department{DepartName ="МЧС" }));
-                TestData.Add(new Employee("Семенова", "Мария", "Ивановна", 28, new Department{DepartName ="Минтруд" }));
-                TestData.Add(new Employee("Лазарев", "Александр", "Арсентьевич", 29, new Department{DepartName ="МВД" }));
-                TestData.Add(new Employee("Власов", "Владимир", "Александрович", 47, new Department{DepartName ="Минтруд" }));
-                TestData.Add(new Employee("Копылова", "Александра", "Анатольевна", 41, new Department{DepartName ="Минфин" }));
-                TestData.Add(new Employee("Новиков", "Дамир", "Ярославович", 35, new Department{DepartName ="МИД" }));
-                TestData.Add(new Employee("Гуров", "Данила", "Платонович", 37, new Department{DepartName ="Минтруд" }));
-                TestData.Add(new Employee("Меркулов", "Максим", "Артёмович", 25, new Department{DepartName ="Минфин" }));
+                TestData.Add(new Employee { Surname = "Панкратова", Name = "Мира", Patranomic = "Павловна", Age = rand.Next(10, 89) });
+                TestData.Add(new Employee { Surname = "Антипова", Name = "София", Patranomic = "Егоровна", Age = rand.Next(10, 89) });
+                TestData.Add(new Employee { Surname = "Морозов", Name = "Дмитрий", Patranomic = "Иванович", Age = rand.Next(10, 89) });
+                TestData.Add(new Employee { Surname = "Семенова", Name = "Мария", Patranomic = "Ивановна", Age = rand.Next(10, 89) });
+                TestData.Add(new Employee { Surname = "Лазарев", Name = "Александр", Patranomic = "Арсентьевич", Age = rand.Next(10, 89) });
+                TestData.Add(new Employee { Surname = "Власов", Name = "Владимир", Patranomic = "Александрович", Age = rand.Next(10, 89) });
+                TestData.Add(new Employee { Surname = "Копылова", Name = "Александра", Patranomic = "Анатольевна", Age = rand.Next(10, 89) });
+                TestData.Add(new Employee { Surname = "Новиков", Name = "Дамир", Patranomic = "Ярославович", Age = rand.Next(10, 89) });
+                TestData.Add(new Employee { Surname = "Гуров", Name = "Данила", Patranomic = "Платонович", Age = rand.Next(10, 89) });
+                TestData.Add(new Employee { Surname = "Меркулов", Name = "Максим", Patranomic = "Артёмович", Age = rand.Next(10, 89) });
+
                 foreach (var item in TestData)
                 {
                     yield return item;
@@ -37,7 +44,7 @@ namespace LessonLivel2.Data
             else
             {
                 List<object> list = new List<object>();
-                var DepartmentList = new List<Department>()
+                var DepartmentList = new List<ModelData.Model.Department>()
             {
                  new Department { DepartName ="МВД" },
                  new Department { DepartName ="Минтруд"},
@@ -47,7 +54,7 @@ namespace LessonLivel2.Data
 
             };
 
-                Random rand = new Random();
+               
                 var USERList = new List<Employee>()
             {
                  new Employee{Surname ="Панкратова",Name= "Мира",Patranomic= "Павловна",Age= rand.Next(10,89) },

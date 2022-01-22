@@ -1,6 +1,5 @@
 ﻿using LessonLivel2.Data;
-using LessonLivel2.Model;
-using LessonLivel2.ViewModel;
+using LessonLivel2.ModelData;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -14,11 +13,19 @@ namespace LessonLivel2.SaveConfig
 {
     public class LoadFiles 
     {
+        string NameFile = null;
+        bool flag=false;
+        public LoadFiles(bool Flag, string namef)
+        {
+            NameFile = namef;
+            this.flag = Flag;
+        }
+
         public ObservableCollection<Employee> LoadFile()
         {
-            if (File.Exists(MainWindowViewModel.Employee))
+            if (File.Exists(NameFile))
             {
-                using (FileStream fs = new FileStream(MainWindowViewModel.Employee, FileMode.Open))
+                using (FileStream fs = new FileStream(NameFile, FileMode.Open))
                 {
                     using (StreamReader fa = new StreamReader(fs))
                     {
@@ -30,7 +37,7 @@ namespace LessonLivel2.SaveConfig
             }
             else
             {                
-              return  Task.Run(()=> new EmpData().AddEmployee()).GetAwaiter().GetResult();
+              return System.Threading.Tasks.Task.Run(()=> new EmpData(flag).AddEmployee()).GetAwaiter().GetResult();
             }
         }
        
